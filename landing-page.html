@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thread & Bloom — Small-Batch Coffee Roastery</title>
+<meta name="description" content="Thread & Bloom is a small-batch coffee roastery. Single-origin beans, roasted in Portland, poured with intention.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Design tokens ---------- */
+  :root{
+    --paper: #F1ECDF;
+    --paper-dim: #E8E1CE;
+    --ink: #221D17;
+    --ink-soft: #55503F;
+    --line: #D3C6A6;
+    --pine: #2F4A3E;
+    --pine-deep: #1E3129;
+    --gold: #B8863B;
+    --gold-soft: #E4CFA0;
+
+    --display: 'Fraunces', serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    --max: 72rem;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+    --radius: 2px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img{ max-width: 100%; display: block; }
+
+  a{ color: inherit; }
+
+  h1, h2, h3{
+    font-family: var(--display);
+    font-weight: 500;
+    line-height: 1.08;
+    margin: 0;
+  }
+
+  p{ margin: 0; }
+
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pine);
+  }
+
+  .wrap{
+    max-width: var(--max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--pine);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    padding: 0.85rem 1.4rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn-primary{ background: var(--pine); color: var(--paper); }
+  .btn-primary:hover{ background: var(--pine-deep); transform: translateY(-1px); }
+  .btn-ghost{ border-color: var(--ink); color: var(--ink); }
+  .btn-ghost:hover{ background: var(--ink); color: var(--paper); }
+
+  /* ================= HEADER / NAV ================= */
+  .site-header{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(241,236,223,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-flow{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1rem;
+    flex-wrap: wrap;
+  }
+  .brand{
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-style: italic;
+    text-decoration: none;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .brand strong{ font-style: normal; font-weight: 600; }
+
+  .nav-links{
+    list-style: none;
+    display: flex;
+    gap: clamp(1rem, 3vw, 2rem);
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .nav-links a{ text-decoration: none; }
+  .nav-links a{
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .nav-links a::after{
+    content: "";
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -2px;
+    height: 1px;
+    background: var(--gold);
+    transition: right 0.2s ease;
+  }
+  .nav-links a:hover::after{ right: 0; }
+
+  /* ================= HERO ================= */
+  .hero{
+    padding-block: clamp(3.5rem, 9vw, 7rem) clamp(3rem, 7vw, 5rem);
+    position: relative;
+  }
+  .hero-grid{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 3rem);
+  }
+  @media (min-width: 60rem){
+    .hero-grid{
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: end;
+    }
+  }
+  .hero-heading{
+    font-size: clamp(2.4rem, 6vw, 4.3rem);
+    max-width: 16ch;
+  }
+  .hero-heading em{ color: var(--pine); font-style: italic; }
+  .hero-lede{
+    margin-top: 1.25rem;
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: clamp(1rem, 1.4vw, 1.1rem);
+  }
+  .hero-cta{
+    display: flex;
+    gap: 0.9rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-figure{
+    justify-self: stretch;
+    border: 1px solid var(--line);
+    background: var(--paper-dim);
+    padding: 1.4rem;
+    border-radius: var(--radius);
+  }
+  .hero-figure figcaption{
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-top: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .drip-svg{ width: 100%; height: auto; display: block; }
+
+  /* ================= PROCESS (the "flow") ================= */
+  .process{
+    padding-block: clamp(3rem, 7vw, 5.5rem);
+    background: var(--pine-deep);
+    color: var(--paper);
+  }
+  .process .eyebrow{ color: var(--gold-soft); }
+  .process h2{ color: var(--paper); margin-top: 0.5rem; }
+  .process-intro{
+    max-width: 52ch;
+    color: #CFE0D4;
+    margin-top: 1rem;
+  }
+
+  .flow-steps{
+    list-style: none;
+    margin: clamp(2.5rem, 6vw, 3.5rem) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    position: relative;
+  }
+  .flow-steps::before{
+    content: "";
+    position: absolute;
+    top: 1.3rem;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-soft) 8%, var(--gold-soft) 92%, transparent);
+  }
+  @media (max-width: 44rem){
+    .flow-steps::before{ display: none; }
+  }
+  .flow-step{
+    flex: 1 1 12rem;
+    min-width: 12rem;
+    padding: 0 1.5rem 0 0;
+    position: relative;
+  }
+  .flow-step .num{
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--pine-deep);
+    background: var(--gold-soft);
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .flow-step h3{
+    font-size: 1.15rem;
+    color: var(--paper);
+    margin-top: 1.1rem;
+  }
+  .flow-step p{
+    margin-top: 0.5rem;
+    font-size: 0.92rem;
+    color: #CFE0D4;
+  }
+  .flow-step time{
+    display: block;
+    margin-top: 0.7rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--gold-soft);
+  }
+
+  /* ================= ORIGINS ================= */
+  .origins{
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+  }
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+  .section-head h2{ font-size: clamp(1.8rem, 3.5vw, 2.6rem); margin-top: 0.5rem; }
+  .section-head p{ max-width: 34ch; color: var(--ink-soft); font-size: 0.95rem; }
+
+  .origin-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: clamp(1.25rem, 3vw, 1.75rem);
+  }
+  .origin-card{
+    border: 1px solid var(--line);
+    background: var(--paper-dim);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .origin-card .tag{
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .origin-card h3{ font-size: 1.4rem; }
+  .origin-card p{ color: var(--ink-soft); font-size: 0.92rem; }
+  .origin-meta{
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--line);
+    padding-top: 0.9rem;
+    margin-top: auto;
+  }
+
+  /* ================= TESTIMONIAL / ASIDE ================= */
+  .testimonial{
+    background: var(--gold-soft);
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+  }
+  .testimonial blockquote{
+    max-width: 42rem;
+    margin: 0 auto;
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+    text-align: center;
+    color: var(--pine-deep);
+  }
+  .testimonial figcaption{
+    text-align: center;
+    margin-top: 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  /* ================= NEWSLETTER / CTA STRIP ================= */
+  .signup{
+    padding-block: clamp(3rem, 7vw, 5rem);
+  }
+  .signup-inner{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding-block: clamp(2rem, 5vw, 3rem);
+  }
+  .signup-copy h2{ font-size: clamp(1.6rem, 3vw, 2.2rem); max-width: 18ch; }
+  .signup-copy p{ margin-top: 0.6rem; color: var(--ink-soft); max-width: 34ch; }
+
+  .signup-form{
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    flex: 1 1 22rem;
+    max-width: 26rem;
+  }
+  .signup-form input[type="email"]{
+    flex: 1 1 12rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 0.9rem;
+    border-radius: var(--radius);
+  }
+  .signup-form label{
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ================= FOOTER ================= */
+  .site-footer{
+    background: var(--ink);
+    color: var(--paper-dim);
+    padding-block: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+  }
+  .footer-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #443B2C;
+  }
+  .footer-grid h3{
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: 0.9rem;
+  }
+  .footer-grid ul{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.9rem; }
+  .footer-grid a{ text-decoration: none; }
+  .footer-grid a:hover{ color: var(--paper); }
+  .footer-bottom{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: #9C927A;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-flow">
+    <a class="brand" href="#top">Thread <strong>&amp; Bloom</strong></a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#process">Process</a></li>
+        <li><a href="#origins">Origins</a></li>
+        <li><a href="#signup">Journal</a></li>
+        <li><a href="#footer-visit">Visit</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary" href="#signup">Shop origins</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero wrap" aria-labelledby="hero-heading">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Small-batch roastery — Portland, OR</p>
+        <h1 id="hero-heading" class="hero-heading">Coffee poured with <em>intention</em>, from crop to cup.</h1>
+        <p class="hero-lede">We roast in twelve-kilo batches, cup every lot before it ships, and print the bloom time right on the bag. Nothing here is rushed — the coffee tells us when it's ready.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#origins">Browse this week's origins</a>
+          <a class="btn btn-ghost" href="#process">See our process</a>
+        </div>
+      </div>
+
+      <figure class="hero-figure">
+        <svg class="drip-svg" viewBox="0 0 320 220" role="img" aria-labelledby="drip-title">
+          <title id="drip-title">Illustration of a pour-over dripper with coffee flowing through a filter into a carafe</title>
+          <rect x="0" y="0" width="320" height="220" fill="none"/>
+          <polygon points="90,20 230,20 190,110 130,110" fill="none" stroke="#2F4A3E" stroke-width="2"/>
+          <path d="M100,110 C100,150 120,150 120,180 C120,195 200,195 200,180 C200,150 220,150 220,110 Z" fill="none" stroke="#221D17" stroke-width="2"/>
+          <line x1="160" y1="20" x2="160" y2="0" stroke="#B8863B" stroke-width="2"/>
+          <circle cx="150" cy="45" r="2" fill="#B8863B"/>
+          <circle cx="168" cy="70" r="2" fill="#B8863B"/>
+          <circle cx="155" cy="95" r="2" fill="#B8863B"/>
+        </svg>
+        <figcaption>
+          <span>Kalita 185</span>
+          <span>3:15 total pour</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- PROCESS: a genuine sequence, so numbered steps are earned -->
+  <section id="process" class="process" aria-labelledby="process-heading">
+    <div class="wrap">
+      <p class="eyebrow">The brew, start to finish</p>
+      <h2 id="process-heading">Four stages, every cup.</h2>
+      <p class="process-intro">This is the same order we follow behind the bar and the order we recommend at home. Skip a stage and the cup tells on you.</p>
+
+      <ol class="flow-steps">
+        <li class="flow-step">
+          <span class="num" aria-hidden="true">01</span>
+          <h3>Bloom</h3>
+          <p>A small pour wakes the grounds and releases trapped CO₂ before the real extraction begins.</p>
+          <time>0:00 – 0:45</time>
+        </li>
+        <li class="flow-step">
+          <span class="num" aria-hidden="true">02</span>
+          <h3>Pour</h3>
+          <p>Slow, concentric circles keep the bed saturated evenly, avoiding channels that drain too fast.</p>
+          <time>0:45 – 2:00</time>
+        </li>
+        <li class="flow-step">
+          <span class="num" aria-hidden="true">03</span>
+          <h3>Drip</h3>
+          <p>Gravity finishes the job. We let the last of the water clear the bed on its own timeline.</p>
+          <time>2:00 – 3:15</time>
+        </li>
+        <li class="flow-step">
+          <span class="num" aria-hidden="true">04</span>
+          <h3>Rest</h3>
+          <p>Thirty seconds off the burner lets the aromatics settle before the first sip.</p>
+          <time>3:15 – 3:45</time>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ORIGINS -->
+  <section id="origins" class="origins wrap" aria-labelledby="origins-heading">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Currently pouring</p>
+        <h2 id="origins-heading">This week's origins.</h2>
+      </div>
+      <p>Three lots, rotated seasonally, each cupped and scored before it goes on the shelf.</p>
+    </div>
+
+    <div class="origin-grid">
+      <article class="origin-card">
+        <p class="tag">Washed · Floral</p>
+        <h3>Ethiopia, Yirgacheffe</h3>
+        <p>Jasmine and stone fruit up front, a black-tea body, and a finish that lingers like bergamot.</p>
+        <div class="origin-meta">
+          <span>1,950m</span>
+          <span>Score 88.5</span>
+        </div>
+      </article>
+
+      <article class="origin-card">
+        <p class="tag">Honey · Balanced</p>
+        <h3>Colombia, Huila</h3>
+        <p>Caramelized sugar and red apple, with a syrupy body that holds up well with milk.</p>
+        <div class="origin-meta">
+          <span>1,700m</span>
+          <span>Score 86</span>
+        </div>
+      </article>
+
+      <article class="origin-card">
+        <p class="tag">Natural · Bold</p>
+        <h3>Guatemala, Antigua</h3>
+        <p>Dark chocolate and dried cherry, volcanic soil giving it a heavier, resonant finish.</p>
+        <div class="origin-meta">
+          <span>1,550m</span>
+          <span>Score 87</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <aside class="testimonial" aria-label="Customer testimonial">
+    <figure class="wrap">
+      <blockquote>"First roastery that's made me actually time my pour. The bag tells you exactly how — no guesswork."</blockquote>
+      <figcaption>— Priya N., subscriber since 2023</figcaption>
+    </figure>
+  </aside>
+
+  <!-- SIGNUP -->
+  <section id="signup" class="signup wrap" aria-labelledby="signup-heading">
+    <div class="signup-inner">
+      <div class="signup-copy">
+        <p class="eyebrow">The Journal</p>
+        <h2 id="signup-heading">Notes from the roaster, monthly.</h2>
+        <p>Origin updates, cupping scores, and the occasional recipe. No spam, unsubscribe anytime.</p>
+      </div>
+      <form class="signup-form" action="#" method="post">
+        <div style="flex:1 1 12rem;">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="align-self:flex-end;">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer id="footer-visit" class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h3>Visit</h3>
+        <ul>
+          <li>412 Alder Street</li>
+          <li>Portland, OR 97205</li>
+          <li>Open daily, 7am–4pm</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <ul>
+          <li><a href="#origins">Single origins</a></li>
+          <li><a href="#">Subscriptions</a></li>
+          <li><a href="#">Brew gear</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Studio</h3>
+        <ul>
+          <li><a href="#process">Our process</a></li>
+          <li><a href="#">Wholesale</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Follow</h3>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Journal RSS</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Thread &amp; Bloom Coffee Roasters</span>
+      <span>Roasted and poured in Portland</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
